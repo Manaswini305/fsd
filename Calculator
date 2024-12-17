@@ -1,0 +1,172 @@
+App.js
+import React, { useState } from 'react';
+import './App.css';
+
+const Calculator = () => {
+  const [input, setInput] = useState('');
+  const [result, setResult] = useState('');
+
+  const handleClick = (value) => {
+    if (value === '=') {
+      try {
+        const evalResult = eval(input);
+        setResult(evalResult);
+        setInput();
+      } catch (error) {
+        setResult('Math Error');
+        setInput('');
+      }
+    } else if (value === 'Clear') {
+      setInput('');
+      setResult('');
+    } else if(value=='Delete'){
+      setInput((prev) => prev.slice(0,-1));
+      setResult('');
+    } 
+    
+    else {
+      setInput((prev) => prev + value);
+    }
+  };
+ 
+  
+  return (
+    <div className="calculator">
+      <h2> Calculator</h2>
+      <div className="screen">
+        <input type="text" readOnly value={input} placeholder=" " />
+        <input type="text" readOnly value={result} placeholder="Result" />
+      </div>
+      <div className="button-row">
+        {['7', '8', '9', '/'].map((item) => (
+          <button key={item} onClick={() => handleClick(item)}>
+            {item}
+          </button>
+        ))}
+        {['4', '5', '6', '*'].map((item) => (
+          <button key={item} onClick={() => handleClick(item)}>
+            {item}
+          </button>
+        ))}
+        {['1', '2', '3', '-'].map((item) => (
+          <button key={item} onClick={() => handleClick(item)}>
+            {item}
+          </button>
+        ))}
+        <button onClick={() => handleClick('0')}>0</button>
+        <button onClick={() => handleClick('+')}>+</button>
+        <button className="equals" onClick={() => handleClick('=')}>=</button>
+        <button className="back" onClick={() => handleClick('Delete')}>Delete</button>
+        <button className="clear" onClick={() => handleClick('Clear')}>Clear</button>
+
+      </div>
+    </div>
+  );
+};
+
+export default Calculator;
+App.css
+/* App.css */
+
+/* Center the calculator on the page */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Calculator container */
+.calculator {
+  width: 300px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Title */
+h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Screen styles */
+.screen {
+  margin-bottom: 15px;
+}
+
+.screen input {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  text-align: right;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/* Button grid */
+.button-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+/* Button styles */
+button {
+  padding: 15px;
+  font-size: 1em;
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #d0d0d0;
+}
+
+/* Special buttons */
+.equals {
+  background-color: #4caf50;
+  color: white;
+}
+
+.equals:hover {
+  background-color: #45a049;
+}
+
+.clear {
+  background-color: #ff5722;
+  color: white;
+}
+
+.clear:hover {
+  background-color: #e64a19;
+}
+index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
