@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery Star Rating System</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .stars {
+            display: flex;
+            direction: row;
+            justify-content: center;
+            margin-top: 50px;
+        }
+
+        .star {
+            font-size: 40px;
+            color: grey;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .star.selected {
+            color: gold;
+        }
+
+        #rating-display {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+    <h1 style="text-align: center;">Star Rating System</h1>
+    
+    <div class="stars">
+        <span class="star" data-rating="1">&#9733;</span>
+        <span class="star" data-rating="2">&#9733;</span>
+        <span class="star" data-rating="3">&#9733;</span>
+        <span class="star" data-rating="4">&#9733;</span>
+        <span class="star" data-rating="5">&#9733;</span>
+    </div>
+    
+    <div id="rating-display">Your rating: <span id="rating-value">0</span></div>
+
+    <script>
+        $(document).ready(function() {
+            $('.star').on('click', function() {
+                var rating = $(this).data('rating');
+                $('.star').removeClass('selected');
+                $('.star').each(function(index) {
+                    if (index < rating) {
+                        $(this).addClass('selected');
+                    }
+                });
+                $('#rating-value').text(rating);
+            });
+        });
+    </script>
+
+</body>
+</html>
