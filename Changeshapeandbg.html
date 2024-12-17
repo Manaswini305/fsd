@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #block{
+            width : 100px;
+            height : 100px;
+            background-color: red;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id = "block">
+    </div>
+    <button id = "change">Change</button>
+    <script>
+        const block = document.getElementById('block');
+        const changecolorbackground = document.getElementById('change');
+        function changebgshape(){
+            const rcolor = '#'+Math.floor(Math.random()*16777215).toString(16);
+            block.style.backgroundColor = rcolor;
+            if(block.style.borderRadius=='50%'){
+                block.style.borderRadius = '0';
+                block.style.width = '100px';
+                block.style.height = '100px';
+            }
+            else{
+                block.style.borderRadius = '50%';
+                block.style.width = '100px';
+                block.style.height = '100px';
+
+            }
+
+
+
+        }
+        change.addEventListener('click',changebgshape);
+    </script>
+    
+</body>
+</html>
