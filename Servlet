@@ -1,0 +1,199 @@
+web.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>com.example.LoginServlet</servlet-class>
+        
+         <init-param>
+            <param-name>username</param-name>
+            <param-value>admin</param-value>
+        </init-param>
+        <init-param>
+            <param-name>password</param-name>
+            <param-value>123</param-value>
+        </init-param>
+    </servlet>
+    <servlet>
+        <servlet-name>WelcomeServlet</servlet-name>
+        <servlet-class>com.example.WelcomeServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>com.example.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>WelcomeServlet</servlet-name>
+        <url-pattern>/WelcomeServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/LogoutServlet</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+</web-app>
+LoginServlet.java
+package com.example;
+import java.util.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
+    private String validUsername;
+    private String validPassword;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        validUsername = config.getInitParameter("username");
+        validPassword = config.getInitParameter("password");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        PrintWriter out = response.getWriter();
+
+        if (username.equals(validUsername) && password.equals(validPassword)) {
+            HttpSession session = request.getSession();
+            session.setAttribute("username", username);
+            session.setAttribute("loginTime", new Date());
+            response.sendRedirect("welcome");
+        } else {
+            out.println("<html><body>");
+            out.println("<h3>Invalid username or password.</h3>");
+            out.println("<a href='index.html'>Try Again</a>");
+            out.println("</body></html>");
+        }
+    }
+}
+LogoutServlet.java
+package com.example;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+@WebServlet("/logout")
+public class LogoutServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Retrieve existing session
+        HttpSession session = request.getSession(false);
+        
+        if (session != null) {
+            // Retrieve username and loginTime from session
+            String username = (String) session.getAttribute("username");
+                  Date loginTime = (Date) session.getAttribute("loginTime");
+            Date logoutTime = new Date();
+ PrintWriter out = response.getWriter();
+            // Calculate the session duration in milliseconds
+            long durationInMillis = logoutTime.getTime() - loginTime.getTime();
+            
+            // Convert the duration to hours, minutes, seconds
+            long hours = (durationInMillis / (1000 * 60 * 60)) % 24;
+            long minutes = (durationInMillis / (1000 * 60)) % 60;
+            long seconds = (durationInMillis / 1000) % 60;
+
+            // Invalidate the session
+            session.invalidate();
+            
+            // Generate HTML response
+            response.setContentType("text/html");
+            out.println("<html><body>");
+            out.println("<h2>Thank You, " + username + "!</h2>");
+            out.println("<p>Your session lasted for: " + hours + " hours: " + minutes + " minutes: " + seconds + " seconds.</p>");
+            out.println("<a href='index.html'>Login Again</a>");
+            out.println("</body></html>");
+        } else {
+            // Redirect to login page if no session exists
+            response.sendRedirect("index.html");
+        }
+    }
+}
+WelcomeServlet.java
+package com.example;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+@WebServlet("/welcome")
+public class WelcomeServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Retrieve existing session
+        HttpSession session = request.getSession(false);
+         PrintWriter out = response.getWriter();
+        // Redirect to login page if no session exists or if the session is invalid
+        if (session == null || session.getAttribute("username") == null) {
+            response.sendRedirect("index.html");
+            return;
+        }
+
+        // Retrieve username and loginTime from the session
+        String username = (String) session.getAttribute("username");
+        Date loginTime = (Date) session.getAttribute("loginTime"); // Correctly cast to Date
+       
+
+        // Generate HTML response
+        response.setContentType("text/html");
+        out.println("<html><body>");
+        out.println("<h2>Welcome, " + username + "</h2>");
+        out.println("<div style='position: absolute; top: 10px; right: 10px;'>Start Time: " + loginTime + "</div>");
+        out.println("<form action='logout' method='post'>");
+       out.println("<button type='submit'>Logout</button>");
+        out.println("</form>");
+        out.println("</body></html>");
+    }
+}
+index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form action="LoginServlet" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br><br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
